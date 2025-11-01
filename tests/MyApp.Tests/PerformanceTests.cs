@@ -5,13 +5,12 @@ using System.Diagnostics;
 namespace MyApp.Tests;
 
 [TestClass]
-[TestCategory("Performance")]
 public class PerformanceTests
 {
     private Calculator _calculator = new();
 
     [TestMethod]
-    [TestCategory("Performance")]
+    [TestProperty("Type", "Performance")]
     public void Calculator_PerformanceTest_CompletesInTime()
     {
         TestContext.WriteLine("Starting performance test");
