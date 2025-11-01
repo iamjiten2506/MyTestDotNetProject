@@ -1,0 +1,43 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0
+    commands:
+      - echo "Installing dependencies"
+  pre_build:
+    commands:
+      - echo "Restoring packages"
+      - dotnet restore
+  build:
+    commands:
+      - echo "Building solution"
+      - dotnet build --configuration Release --no-restore
+  post_build:
+    commands:
+      - echo "Running Unit tests"
+      - dotnet test --filter TestCategory=Unit -l:trx --collect:"XPlat Code Coverage" --results-directory ./TestResults/Unit
+      - echo "Running Integration tests"
+      - dotnet test --filter TestCategory=Integration -l:trx --collect:"XPlat Code Coverage" --results-directory ./TestResults/Integration
+      - echo "Running E2E-Integration tests"
+      - dotnet test --filter TestCategory=E2E-Integration -l:trx --results-directory ./TestResults/E2E
+      - echo "Running Performance tests"
+      - dotnet test --filter TestCategory=Performance -l:trx --results-directory ./TestResults/Performance
+
+reports:
+  TestResults:
+    files:
+      - "**/TestResults/**/*.trx"
+    discard-paths: yes
+    file-format: VisualStudioTrx
+  CodeCoverage:
+    files:
+      - "**/TestResults/**/coverage.cobertura.xml"
+    discard-paths: yes
+    file-format: COBERTURAXML
+
+artifacts:
+  files:
+    - "**/*"
+  name: build-artifacts
