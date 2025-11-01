@@ -10,7 +10,6 @@ phases:
       - npm install -g cdk
       - npm install -g ibm-openapi-validator@0.46.0
       - export PATH="$PATH:/root/.dotnet/tools"
-      - aws codeartifact login --tool dotnet --domain gentrack --domain-owner 971053710367 --repository Gentrack.SDK
       - dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.2.0 --ignore-failed-sources
   pre_build:
     commands:
@@ -41,7 +40,6 @@ reports:
       - "**/TestResults/*.trx"
     discard-paths: yes
     file-format: VisualStudioTrx
-
   CodeCoverage:
     files:
       - "./report/Cobertura.xml"
