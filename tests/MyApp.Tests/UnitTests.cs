@@ -4,13 +4,12 @@ using MyApp;
 namespace MyApp.Tests;
 
 [TestClass]
-[TestCategory("Unit")]
 public class UnitTests
 {
     private Calculator _calculator = new();
 
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestProperty("Type", "Unit")]
     public void Add_TwoNumbers_ReturnsSum()
     {
         TestContext.WriteLine("Testing addition of 2 + 3");
@@ -20,7 +19,7 @@ public class UnitTests
     }
 
     [TestMethod]
-    [TestCategory("Unit")]
+    [TestProperty("Type", "Unit")]
     public void Subtract_TwoNumbers_ReturnsDifference()
     {
         TestContext.WriteLine("Testing subtraction of 5 - 3");
