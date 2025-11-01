@@ -4,40 +4,50 @@ phases:
   install:
     runtime-versions:
       dotnet: 8.0
+      python: 3.12
+      nodejs: 22
     commands:
-      - echo "Installing dependencies"
+      - npm install -g cdk
+      - npm install -g ibm-openapi-validator@0.46.0
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - aws codeartifact login --tool dotnet --domain gentrack --domain-owner 971053710367 --repository Gentrack.SDK
+      - dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.2.0 --ignore-failed-sources
   pre_build:
     commands:
-      - echo "Restoring packages"
-      - dotnet restore
+      - echo $CODEBUILD_WEBHOOK_TRIGGER
+      - export CODEBUILD_GIT_BRANCH=`git branch -a --contains HEAD | sed -n 2p | awk '{ printf $1 }'`
+      - echo Printing variables...
+      - printenv
   build:
     commands:
-      - echo "Building solution"
-      - dotnet build --configuration Release --no-restore
+      - python rig.py build -e ci
   post_build:
     commands:
-      - echo "Running Unit tests"
-      - dotnet test --filter TestCategory=Unit -l:trx --collect:"XPlat Code Coverage" --results-directory ./TestResults/Unit
-      - echo "Running Integration tests"
-      - dotnet test --filter TestCategory=Integration -l:trx --collect:"XPlat Code Coverage" --results-directory ./TestResults/Integration
-      - echo "Running E2E-Integration tests"
-      - dotnet test --filter TestCategory=E2E-Integration -l:trx --results-directory ./TestResults/E2E
-      - echo "Running Performance tests"
-      - dotnet test --filter TestCategory=Performance -l:trx --results-directory ./TestResults/Performance
-
+      - dotnet test --filter Type=Unit -l:trx --collect:"XPlat Code Coverage" --settings runsettings.xml
+      - python rig.py deploy install --app Mis.Uk.Infrastructure -e ci
+      - dotnet test --filter Type=Integration -l:trx --collect:"XPlat Code Coverage" --settings runsettings.xml
+      - python rig.py install --app Mis.Uk.Infrastructure -e ci --readyToRun True
+      - dotnet test --filter Type=E2E-Integration -l:trx
+      - dotnet test --filter Type=Performance -l:trx
+      - reportgenerator "-reports:./**/TestResults/**/coverage.cobertura.xml" "-targetdir:./report" "-reporttypes:Cobertura"
+      - cd docs/gcis-events
+      - lint-openapi market-interaction-events-api.yaml
+      - cd ../external-api
+      - lint-openapi market-interaction-core-api.yaml
+      - lint-openapi market-interaction-uk-api.yaml
 reports:
-  TestResults:
+  Results:
     files:
-      - "**/TestResults/**/*.trx"
+      - "**/TestResults/*.trx"
     discard-paths: yes
     file-format: VisualStudioTrx
+
   CodeCoverage:
     files:
-      - "**/TestResults/**/coverage.cobertura.xml"
+      - "./report/Cobertura.xml"
     discard-paths: yes
     file-format: COBERTURAXML
-
 artifacts:
   files:
-    - "**/*"
-  name: build-artifacts
+    - cdk-outputs/*
+  name: deployment-configuration
