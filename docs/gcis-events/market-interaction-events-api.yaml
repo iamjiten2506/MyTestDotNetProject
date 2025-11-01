@@ -1,0 +1,18 @@
+openapi: 3.0.0
+info:
+  title: Market Interaction Events API
+  version: 1.0.0
+  description: API for market interaction events
+paths:
+  /events:
+    get:
+      summary: Get events
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
