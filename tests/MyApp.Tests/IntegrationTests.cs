@@ -4,13 +4,12 @@ using MyApp;
 namespace MyApp.Tests;
 
 [TestClass]
-[TestCategory("Integration")]
 public class IntegrationTests
 {
     private Calculator _calculator = new();
 
     [TestMethod]
-    [TestCategory("Integration")]
+    [TestProperty("Type", "Integration")]
     public void Calculator_MultipleOperations_WorksTogether()
     {
         TestContext.WriteLine("Testing multiple calculator operations");
