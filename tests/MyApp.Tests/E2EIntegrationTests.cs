@@ -4,13 +4,12 @@ using MyApp;
 namespace MyApp.Tests;
 
 [TestClass]
-[TestCategory("E2E-Integration")]
 public class E2EIntegrationTests
 {
     private Calculator _calculator = new();
 
     [TestMethod]
-    [TestCategory("E2E-Integration")]
+    [TestProperty("Type", "E2E-Integration")]
     public void Calculator_EndToEndScenario_Success()
     {
         TestContext.WriteLine("Starting E2E test scenario");
@@ -27,7 +26,7 @@ public class E2EIntegrationTests
     }
 
     [TestMethod]
-    [TestCategory("E2E-Integration")]
+    [TestProperty("Type", "E2E-Integration")]
     public void Calculator_ErrorHandling_ThrowsException()
     {
         TestContext.WriteLine("Testing error handling in E2E scenario");
